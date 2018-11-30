@@ -20,5 +20,6 @@
     <string name="loginButton">Login</string>
     <string name="loginOr">or...</string>
     <string name="loginMSG">Use any of your accounts to log-in in this app, we will create the account for you. If you wish, you can use your Google account. \nYour private data will not be stored.</string>
+    <string name="mensaje_cuando_la_cagas">Email no válido</string>
 
 </resources>
