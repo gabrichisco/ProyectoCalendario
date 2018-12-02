@@ -1,16 +1,21 @@
 package gabrichisco.proyectocalendario;
 
 import android.app.Activity;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CalendarView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.w3c.dom.Text;
+import com.applandeo.materialcalendarview.CalendarView;
+import com.applandeo.materialcalendarview.EventDay;
+import com.applandeo.materialcalendarview.listeners.OnDayClickListener;
 
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
 
 public class CreateCalendar extends Activity {
     CalendarView simpleCalendarView;
@@ -27,33 +32,34 @@ public class CreateCalendar extends Activity {
         simpleCalendarView = findViewById(R.id.simpleCalendarView);
         instructionsTV = findViewById(R.id.instructions);
 
-        simpleCalendarView.setFirstDayOfWeek(2);
+        nextStepBtn.setText("Aceptar");
+        instructionsTV.setText("Selecciona el rango de fechas");
 
-        nextStepBtn.setText("Elige mes");
-        instructionsTV.setText("Selecciona la fecha inicial");
+        List<EventDay> events = new ArrayList<>();
 
-        simpleCalendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+        Calendar calendar = Calendar.getInstance();
+        events.add(new EventDay(calendar, R.color.colorAccent));
+        simpleCalendarView.setEvents(events);
+
+
+        simpleCalendarView.setOnDayClickListener(new OnDayClickListener() {
             @Override
-            public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
-                if(count == 0){
-                    Toast.makeText(getApplicationContext(), ""+dayOfMonth + "/" + month + "/" + year, Toast.LENGTH_LONG).show();
-                    simpleCalendarView.setMinDate(simpleCalendarView.getDate());
-                    instructionsTV.setText("Selecciona la fecha final");
-                    count++;
-                } else if(count == 1) {
-                    Toast.makeText(getApplicationContext(), ""+dayOfMonth + "/" + month + "/" + year, Toast.LENGTH_LONG).show();
-                    simpleCalendarView.setMaxDate(simpleCalendarView.getDate());
-                    count++;
-                }
+            public void onDayClick(EventDay eventDay) {
+                Calendar clickedDayCalendar = eventDay.getCalendar();
+
             }
         });
 
         nextStepBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Long dateLong = simpleCalendarView.getDate();
-                Date date = new Date(dateLong);
-                date.getMonth();
+                for (Calendar calendar : simpleCalendarView.getSelectedDates()) {
+                    System.out.println(calendar.getTime().toString());
+
+                }
+                Toast.makeText(getApplicationContext(),
+                        simpleCalendarView.getSelectedDates().size() + " días selecionados",
+                        Toast.LENGTH_SHORT).show();
             }
         });
     }

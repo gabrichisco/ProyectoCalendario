@@ -6,8 +6,10 @@
     android:layout_height="match_parent"
     tools:context=".CreateCalendar">
 
-    <CalendarView
+    <com.applandeo.materialcalendarview.CalendarView
         android:id="@+id/simpleCalendarView"
+        app:type="range_picker"
+        app:selectionColor="@color/colorAccent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
@@ -26,9 +28,7 @@
         android:layout_below="@id/simpleCalendarView"
         android:layout_centerInParent="true"
         android:layout_marginTop="10dp"
-        android:visibility="gone"
         android:backgroundTint="@color/colorSecundary"
-        android:text="@string/loginButton"
         android:textColor="@color/colorSecundary"
         android:textSize="24sp" />
 
