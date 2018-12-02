@@ -31,8 +31,8 @@
         android:layout_centerInParent="true"
         android:layout_marginEnd="5dp"
         android:layout_marginRight="5dp"
-        android:layout_toLeftOf="@id/idLoginEmail"
         android:layout_toStartOf="@id/idLoginEmail"
+        android:layout_toLeftOf="@id/idLoginEmail"
         android:src="@drawable/ic_email_black_48dp" />
 
     <ImageView
@@ -42,8 +42,8 @@
         android:layout_centerInParent="true"
         android:layout_marginEnd="5dp"
         android:layout_marginRight="5dp"
-        android:layout_toLeftOf="@id/idLoginPassword"
         android:layout_toStartOf="@id/idLoginPassword"
+        android:layout_toLeftOf="@id/idLoginPassword"
         android:src="@drawable/ic_vpn_key_black_48dp" />
 
     <Button
@@ -54,13 +54,14 @@
         android:layout_below="@id/idLoginPassword"
         android:layout_centerInParent="true"
         android:layout_marginTop="10dp"
+        android:backgroundTint="@color/colorSecundary"
         android:text="@string/loginButton"
         android:textColor="@color/colorLogin"
-        android:backgroundTint="@color/colorSecundary"
         android:textSize="24sp" />
 
-    <TextView
+    <Button
         android:id="@+id/idLoginForgot"
+        style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/idLoginButton"

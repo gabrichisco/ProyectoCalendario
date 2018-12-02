@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
@@ -16,12 +17,14 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class LoginActivity extends Activity {
     private FirebaseAuth mAuth;
     FirebaseUser currentUser;
     EditText email, password;
-    Button loginBtn;
+    Button loginBtn, forgotBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +37,7 @@ public class LoginActivity extends Activity {
         email = findViewById(R.id.idLoginEmail);
         password = findViewById(R.id.idLoginPassword);
         loginBtn = findViewById(R.id.idLoginButton);
+        forgotBtn = findViewById(R.id.idLoginForgot);
 
         if (currentUser != null) {
             goToMain();
@@ -42,12 +46,24 @@ public class LoginActivity extends Activity {
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (isValidEmail(email.getText().toString())  /*&& isPasswordValid(password.getText().toString())*/) {
+                // Comprobar el email y la contraseña
+                if (isValidEmail(email.getText().toString()) && isValidPassword(password.getText().toString())) {
                     login();
                 } else {
+                    // Igual es mejor comprobar los dos campos por separado y mostrar un mensaje por cada uno
 //                    Toast.makeText(LoginActivity.this, "Email no válido", Toast.LENGTH_LONG);
                     Toast.makeText(LoginActivity.this, getResources().getString(R.string.mensaje_cuando_la_cagas), Toast.LENGTH_LONG);
                 }
+            }
+        });
+
+        loginBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Boton para recuperar la cuenta
+                // Se que Firebase tiene un metodo de recuperarla y te envia un correo, pero hay que verlo
+                // De momento se puede poner un mensaje de que aun no funciona
+                Toast.makeText(LoginActivity.this, getResources().getString(R.string.mensaje_cuando_la_cagas), Toast.LENGTH_LONG);
             }
         });
     }
@@ -57,18 +73,16 @@ public class LoginActivity extends Activity {
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        if(task.isSuccessful()){
+                        Log.d("Login", "Task: " + task.getException());
+                        if (task.isSuccessful()) {
                             FirebaseUser user = mAuth.getCurrentUser();
 
-                            /*
+
                             FirebaseDatabase database = FirebaseDatabase.getInstance();
                             DatabaseReference userDataDB = database.getReference("Users");
 
-                            Long currentTime = System.currentTimeMillis();
-
-                            userDataDB.child(user.getUid()).child("UserEmail").setValue(email);
-                            userDataDB.child(user.getUid()).child("Date").setValue(currentTime);
-                             */
+                            userDataDB.child(user.getUid()).child("UserEmail").setValue(email.getText().toString());
+                            userDataDB.child(user.getUid()).child("Date").setValue(System.currentTimeMillis());
 
                             goToMain();
                         } else {
@@ -81,10 +95,16 @@ public class LoginActivity extends Activity {
     private void goToMain() {
         Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
         LoginActivity.this.startActivity(myIntent);
+        finish();
     }
 
     private static boolean isValidEmail(String email) {
         return !TextUtils.isEmpty(email) && Patterns.EMAIL_ADDRESS.matcher(email).matches();
+    }
+
+    private static boolean isValidPassword(String password) {
+        // Completar aqui las reglas de la contraseña
+        return true;
     }
 }
 
