@@ -42,6 +42,7 @@ public class LoginActivity extends Activity {
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (isValidEmail(email.getText().toString())  /*&& isPasswordValid(password.getText().toString())*/) {
                     login();
                 } else {
 //                    Toast.makeText(LoginActivity.this, "Email no válido", Toast.LENGTH_LONG);
