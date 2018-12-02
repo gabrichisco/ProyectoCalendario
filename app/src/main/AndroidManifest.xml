@@ -24,7 +24,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".MainActivity" />
-        <activity android:name=".CreateCalendar"></activity>
+        <activity android:name=".CreateCalendar" />
+        <activity android:name=".CreateWeek"></activity>
     </application>
 
 </manifest>
