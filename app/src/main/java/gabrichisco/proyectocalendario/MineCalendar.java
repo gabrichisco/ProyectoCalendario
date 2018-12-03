@@ -60,10 +60,9 @@ public class MineCalendar extends Activity {
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(MineCalendar.this, android.R.layout.simple_list_item_1, android.R.id.text1, calendarListNames);
                 listView.setAdapter(adapter);
                 listView.setOnItemClickListener((parent, view, position, id) -> {
-                    Toast.makeText(getApplicationContext(),
-                            "Position :" + position + "  ListItem : " + calendarListKeys.get(position), Toast.LENGTH_LONG)
-                            .show();
-
+                    Intent myIntent = new Intent(MineCalendar.this, ViewCalendar.class);
+                    myIntent.putExtra("key", calendarListKeys.get(position));
+                    MineCalendar.this.startActivity(myIntent);
                 });
                 spinner.setVisibility(View.GONE);
             }

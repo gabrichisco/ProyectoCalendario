@@ -85,8 +85,15 @@ public class CreateCalendar extends Activity {
                     calendarDataDB.child(uuid).child("CalendarName").setValue(calendarTitle);
                     calendarDataDB.child(uuid).child("UserOwner").setValue(currentUser.getUid());
                     calendarDataDB.child(uuid).child("Date").setValue(System.currentTimeMillis());
-                    calendarDataDB.child(uuid).child("MinDate").setValue(listDates.get(0).getTime());
-                    calendarDataDB.child(uuid).child("MaxDate").setValue(listDates.get(listDates.size()-1).getTime());
+
+                    calendarDataDB.child(uuid).child("MinDate").child("Year").setValue(listDates.get(0).get(Calendar.YEAR));
+                    calendarDataDB.child(uuid).child("MinDate").child("Month").setValue(listDates.get(0).get(Calendar.MONTH));
+                    calendarDataDB.child(uuid).child("MinDate").child("Day").setValue(listDates.get(0).get(Calendar.DAY_OF_MONTH));
+
+                    calendarDataDB.child(uuid).child("MaxDate").child("Year").setValue(listDates.get(listDates.size() - 1).get(Calendar.YEAR));
+                    calendarDataDB.child(uuid).child("MaxDate").child("Month").setValue(listDates.get(listDates.size() - 1).get(Calendar.MONTH));
+                    calendarDataDB.child(uuid).child("MaxDate").child("Day").setValue(listDates.get(listDates.size() - 1).get(Calendar.DAY_OF_MONTH));
+
                     calendarDataDB.child(uuid).child("CalendarType").setValue("Days");
 
                     calendarDataDB.child(uuid).child("Users").child(currentUser.getUid()).setValue(currentUser.getEmail());
