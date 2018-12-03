@@ -21,7 +21,7 @@ public class MainActivity extends Activity {
         createBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent myIntent = new Intent(MainActivity.this, CreateWeek.class);
+                Intent myIntent = new Intent(MainActivity.this, CreateCalendar.class);
                 MainActivity.this.startActivity(myIntent);
             }
         });
