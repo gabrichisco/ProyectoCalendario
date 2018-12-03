@@ -16,15 +16,17 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         createBtn = findViewById(R.id.idCreateSchelude);
+        mineBtn = findViewById(R.id.idMineSchelude);
 
 
-        createBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent myIntent = new Intent(MainActivity.this, CreateCalendar.class);
-                MainActivity.this.startActivity(myIntent);
-            }
+        createBtn.setOnClickListener(v -> {
+            Intent myIntent = new Intent(MainActivity.this, CreateCalendar.class);
+            MainActivity.this.startActivity(myIntent);
         });
 
+        mineBtn.setOnClickListener(v -> {
+            Intent myIntent = new Intent(MainActivity.this, MineCalendar.class);
+            MainActivity.this.startActivity(myIntent);
+        });
     }
 }

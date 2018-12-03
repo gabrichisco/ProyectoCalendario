@@ -25,7 +25,8 @@
         </activity>
         <activity android:name=".MainActivity" />
         <activity android:name=".CreateCalendar" />
-        <activity android:name=".CreateWeek"></activity>
+        <activity android:name=".CreateWeek" />
+        <activity android:name=".MineCalendar"></activity>
     </application>
 
 </manifest>
