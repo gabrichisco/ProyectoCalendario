@@ -8,17 +8,24 @@
 
     <TextView
         android:id="@+id/calendarTitle"
-        android:textSize="24sp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textSize="24sp" />
 
     <com.applandeo.materialcalendarview.CalendarView
         android:id="@+id/simpleCalendarView"
-        app:type="many_days_picker"
-        android:layout_marginTop="5dp"
-        android:layout_below="@id/calendarTitle"
-        app:selectionColor="@color/colorAccent"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_below="@id/calendarTitle"
+        android:layout_marginTop="5dp"
+        app:eventsEnabled="true"
+        app:type="many_days_picker" />
+
+    <Button
+        android:id="@+id/OkBtn"
+        android:layout_width="wrap_content"
+        android:layout_below="@id/simpleCalendarView"
+        android:layout_height="wrap_content"
+        android:text="OK"/>
 
 </RelativeLayout>

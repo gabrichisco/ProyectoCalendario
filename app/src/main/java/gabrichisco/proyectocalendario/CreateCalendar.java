@@ -96,7 +96,7 @@ public class CreateCalendar extends Activity {
 
                     calendarDataDB.child(uuid).child("CalendarType").setValue("Days");
 
-                    calendarDataDB.child(uuid).child("Users").child(currentUser.getUid()).setValue(currentUser.getEmail());
+                    calendarDataDB.child(uuid).child("Users").child(currentUser.getUid()).child("UserName").setValue(currentUser.getEmail());
 
                     userDataDB.child(currentUser.getUid()).child("Calendars").child(uuid).setValue(calendarTitle);
 
