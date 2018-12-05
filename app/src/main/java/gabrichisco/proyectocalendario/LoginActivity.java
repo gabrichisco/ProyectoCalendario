@@ -39,31 +39,19 @@ public class LoginActivity extends Activity {
         loginBtn = findViewById(R.id.idLoginButton);
         forgotBtn = findViewById(R.id.idLoginForgot);
 
+
         if (currentUser != null) {
             goToMain();
         }
 
-        loginBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Comprobar el email y la contraseña
-                if (isValidEmail(email.getText().toString()) && isValidPassword(password.getText().toString())) {
-                    login();
-                } else {
-                    // Igual es mejor comprobar los dos campos por separado y mostrar un mensaje por cada uno
+        loginBtn.setOnClickListener(v -> {
+            // Comprobar el email y la contraseña
+            if (isValidEmail(email.getText().toString())) {
+                login();
+            } else {
+                // Igual es mejor comprobar los dos campos por separado y mostrar un mensaje por cada uno
 //                    Toast.makeText(LoginActivity.this, "Email no válido", Toast.LENGTH_LONG);
-                    Toast.makeText(LoginActivity.this, getResources().getString(R.string.mensaje_cuando_la_cagas), Toast.LENGTH_LONG);
-                }
-            }
-        });
-
-        loginBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Boton para recuperar la cuenta
-                // Se que Firebase tiene un metodo de recuperarla y te envia un correo, pero hay que verlo
-                // De momento se puede poner un mensaje de que aun no funciona
-                Toast.makeText(LoginActivity.this, getResources().getString(R.string.mensaje_cuando_la_cagas), Toast.LENGTH_LONG);
+                Toast.makeText(LoginActivity.this, getResources().getString(R.string.mensaje_cuando_la_cagas), Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -86,11 +74,28 @@ public class LoginActivity extends Activity {
 
                             goToMain();
                         } else {
+                            if (task.getException().getMessage().contains("The email address is already in use")) {
+                                LoginActivity.this.mAuth.signInWithEmailAndPassword(email.getText().toString(), password.getText().toString()).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<AuthResult> task) {
+                                        if (task.isSuccessful()) {
+                                            goToMain();
+                                        } else
+                                            Toast.makeText(LoginActivity.this,getResources().getString(R.string.error_incorrect_password), Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                                );
+                            }
+
+                                }
+                         if(task.getException().getMessage().contains("The given password is invalid")) {
+                            Toast.makeText(LoginActivity.this,getResources().getString(R.string.error_invalid_password), Toast.LENGTH_SHORT).show();
+                            }
 
                         }
                     }
-                });
-    }
+                 );
+                }
 
     private void goToMain() {
         Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);

@@ -2,6 +2,7 @@ package gabrichisco.proyectocalendario;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
 import android.widget.Button;
@@ -100,6 +101,9 @@ public class CreateCalendar extends Activity {
 
                     userDataDB.child(currentUser.getUid()).child("Calendars").child(uuid).setValue(calendarTitle);
 
+                    Intent myIntent = new Intent(CreateCalendar.this, ViewCalendar.class);
+                    CreateCalendar.this.startActivity(myIntent);
+                    finish();
                 });
                 builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
 

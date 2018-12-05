@@ -3,6 +3,7 @@
     <color name="colorPrimary">#000000</color>
     <color name="colorPrimaryDark">#000000</color>
     <color name="colorSecundary">#000ba3</color>
-    <color name="colorLogin">#f90000</color>
+    <color name="colorLogin">#000000</color>
+    <color name="colorBackGroundLogin">#9f9f9f</color>
     <color name="colorAccent">#d81b37</color>
 </resources>

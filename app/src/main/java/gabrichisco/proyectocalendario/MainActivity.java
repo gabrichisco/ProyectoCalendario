@@ -17,14 +17,20 @@ public class MainActivity extends Activity {
 
         createBtn = findViewById(R.id.idCreateSchelude);
         mineBtn = findViewById(R.id.idMineSchelude);
+        SearchBtn = findViewById(R.id.idSearchSchelude);
 
 
         createBtn.setOnClickListener(v -> {
-            Intent myIntent = new Intent(MainActivity.this, CreateCalendar.class);
+            Intent myIntent = new Intent(MainActivity.this, CreateWeek.class);
             MainActivity.this.startActivity(myIntent);
         });
 
         mineBtn.setOnClickListener(v -> {
+            Intent myIntent = new Intent(MainActivity.this, MineCalendar.class);
+            MainActivity.this.startActivity(myIntent);
+        });
+
+        SearchBtn.setOnClickListener(v -> {
             Intent myIntent = new Intent(MainActivity.this, MineCalendar.class);
             MainActivity.this.startActivity(myIntent);
         });
