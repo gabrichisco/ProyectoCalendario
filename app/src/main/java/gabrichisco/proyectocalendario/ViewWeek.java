@@ -11,8 +11,6 @@ import android.widget.Toast;
 import com.alamkanak.weekview.DateTimeInterpreter;
 import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewEvent;
-import com.applandeo.materialcalendarview.CalendarView;
-import com.applandeo.materialcalendarview.EventDay;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -39,7 +37,8 @@ public class ViewWeek extends Activity implements WeekView.EmptyViewClickListene
     int Restantes;
     Button addhour;
     String calendarKey;
-    CalendarView simpleCalendarView;
+    TextView calendarTitle;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,93 +49,24 @@ public class ViewWeek extends Activity implements WeekView.EmptyViewClickListene
         database = FirebaseDatabase.getInstance();
         userDataDB = database.getReference("Users");
         CalendarDataDB = database.getReference("Calendars");
-        simpleCalendarView = findViewById(R.id.simpleCalendarView);
-        Numero_Inicial = 0;
-        Numero_Actual = Numero_Inicial;
-        Restantes = 0;
-
-
-        setContentView(R.layout.activity_view_week);
-        // Get a reference for the week view in the layout.
         mWeekView = findViewById(R.id.weekView);
-        // Show a toast message about the touched event.
-//        mWeekView.setOnEventClickListener(this);
-        if (Numero_Inicial > 0) {
-            if (Numero_Actual > 7) {
-                Restantes = 7;
-                Numero_Actual = (Numero_Inicial - 7);
-            } else if (Numero_Actual > 0 && Numero_Actual < 8) {
-                Restantes = Numero_Actual;
-                Numero_Actual = Numero_Actual - Restantes;
-            } else {
-                addhour = findViewById(R.id.Finish);
-            }
 
+        if (getIntent().hasExtra("key")) {
+            Bundle getData = getIntent().getExtras();
+            calendarKey = getData.getString("key");
         }
-        addhour.setOnClickListener();
-        mWeekView.setColumnGap(Restantes);
-        mWeekView.setXScrollingSpeed(0);
-        mWeekView.setShowDistinctWeekendColor(true);
 
         // The week view has infinite scrolling horizontally. We have to provide the events of a
         // month every time the month changes on the week view.
+
+        //        addhour.setOnClickListener();
+        mWeekView.setColumnGap(7);
+        mWeekView.setXScrollingSpeed(0);
+        mWeekView.setShowDistinctWeekendColor(true);
+
         mWeekView.setMonthChangeListener((newYear, newMonth) -> {
+
             List<WeekViewEvent> events = new ArrayList<>();
-
-            ValueEventListener postListener2 = new ValueEventListener() {
-                @SuppressLint("RestrictedApi")
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    Log.d("MineCalendar", dataSnapshot.toString());
-                    ((TextView) findViewById(R.id.calendarTitle)).setText(dataSnapshot.child("CalendarName").getValue().toString());
-
-                    Calendar minDate = Calendar.getInstance();
-                    minDate.set(Integer.parseInt(dataSnapshot.child("MinDate").child("Year").getValue().toString()), Integer.parseInt(dataSnapshot.child("MinDate").child("Month").getValue().toString()), Integer.parseInt(dataSnapshot.child("MinDate").child("Day").getValue().toString()));
-                    Calendar maxDate = Calendar.getInstance();
-                    maxDate.set(Integer.parseInt(dataSnapshot.child("MaxDate").child("Year").getValue().toString()), Integer.parseInt(dataSnapshot.child("MaxDate").child("Month").getValue().toString()), Integer.parseInt(dataSnapshot.child("MaxDate").child("Day").getValue().toString()));
-
-                    simpleCalendarView.setMaximumDate(maxDate);
-                    simpleCalendarView.setMinimumDate(minDate);
-
-                    List<Calendar> disbledDates = new ArrayList<>();
-
-                    List<EventDay> events = new ArrayList<>();
-                    for (DataSnapshot propertySnapshot : dataSnapshot.child("Users").getChildren()) {
-                        for (DataSnapshot snapshotDates : propertySnapshot.child("SelectedDates").getChildren()) {
-                            Calendar calendar = Calendar.getInstance();
-
-                            calendar.set(Integer.parseInt(snapshotDates.child("Year").getValue().toString()), Integer.parseInt(snapshotDates.child("Month").getValue().toString()), Integer.parseInt(snapshotDates.child("Day").getValue().toString()));
-                         /*   EventDay evDay = eventExists(events, calendar);
-
-                            if (evDay != null) {
-                                if (evDay.getImageDrawable().equals(R.drawable.sample_circle)) {
-                                    events.remove(evDay);
-                                    events.add(new EventDay(calendar, R.drawable.sample_two_icons));
-                                }
-//                        } else if (events.contains(new EventDay(calendar, R.drawable.sample_two_icons))) {
-//                            events.add(new EventDay(calendar, R.drawable.sample_three_icons));
-//                        } else if (events.contains(new EventDay(calendar, R.drawable.sample_three_icons))) {
-//                            events.add(new EventDay(calendar, R.drawable.sample_four_icons));
-//                        } else if (events.contains(new EventDay(calendar, R.drawable.sample_four_icons))) {
-
-                            } else {
-                                events.add(new EventDay(calendar, R.drawable.sample_circle));
-                            }
-                        }
-                    }
-
-                    runOnUiThread(() -> {
-                        simpleCalendarView.setDisabledDays(disbledDates);
-
-                        simpleCalendarView.setEvents(events);
-                    });
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                }
-            };
-            CalendarDataDB.child(calendarKey).addValueEventListener(postListener2);*/
 /*
             Calendar startTime = Calendar.getInstance();
             startTime.set(Calendar.HOUR_OF_DAY, 3);
@@ -239,6 +169,66 @@ public class ViewWeek extends Activity implements WeekView.EmptyViewClickListene
             return events;
         });
 
+        ValueEventListener postListener2 = new ValueEventListener() {
+            @SuppressLint("RestrictedApi")
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d("MineCalendar", dataSnapshot.toString());
+                ((TextView) findViewById(R.id.calendarTitle)).setText(dataSnapshot.child("CalendarName").getValue().toString());
+
+                Calendar minDate = Calendar.getInstance();
+                minDate.set(Integer.parseInt(dataSnapshot.child("MinDate").child("Year").getValue().toString()), Integer.parseInt(dataSnapshot.child("MinDate").child("Month").getValue().toString()), Integer.parseInt(dataSnapshot.child("MinDate").child("Day").getValue().toString()));
+                Calendar maxDate = Calendar.getInstance();
+                maxDate.set(Integer.parseInt(dataSnapshot.child("MaxDate").child("Year").getValue().toString()), Integer.parseInt(dataSnapshot.child("MaxDate").child("Month").getValue().toString()), Integer.parseInt(dataSnapshot.child("MaxDate").child("Day").getValue().toString()));
+
+                Numero_Inicial = ViewWeek.this.getTimeRemaining(minDate, maxDate);
+
+                mWeekView.setColumnGap(Restantes);
+
+//                    minDate.set
+
+//                    simpleCalendarView.setMaximumDate(maxDate);
+//                    simpleCalendarView.setMinimumDate(minDate);
+
+                   /* List<Calendar> disbledDates = new ArrayList<>();
+
+                    List<EventDay> events = new ArrayList<>();
+                    for (DataSnapshot propertySnapshot : dataSnapshot.child("Users").getChildren()) {
+                        for (DataSnapshot snapshotDates : propertySnapshot.child("SelectedDates").getChildren()) {
+                            Calendar calendar = Calendar.getInstance();
+
+                            calendar.set(Integer.parseInt(snapshotDates.child("Year").getValue().toString()), Integer.parseInt(snapshotDates.child("Month").getValue().toString()), Integer.parseInt(snapshotDates.child("Day").getValue().toString()));
+                            EventDay evDay = eventExists(events, calendar);
+                            if (evDay != null) {
+                                if (evDay.getImageDrawable().equals(R.drawable.sample_circle)) {
+                                    events.remove(evDay);
+                                    events.add(new EventDay(calendar, R.drawable.sample_two_icons));
+                                }
+//                        } else if (events.contains(new EventDay(calendar, R.drawable.sample_two_icons))) {
+//                            events.add(new EventDay(calendar, R.drawable.sample_three_icons));
+//                        } else if (events.contains(new EventDay(calendar, R.drawable.sample_three_icons))) {
+//                            events.add(new EventDay(calendar, R.drawable.sample_four_icons));
+//                        } else if (events.contains(new EventDay(calendar, R.drawable.sample_four_icons))) {
+
+                            } else {
+                                events.add(new EventDay(calendar, R.drawable.sample_circle));
+                            }
+                        }
+                    }*/
+
+                runOnUiThread(() -> {
+//                        simpleCalendarView.setDisabledDays(disbledDates);
+//
+//                        simpleCalendarView.setEvents(events);
+                });
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        };
+        CalendarDataDB.child(calendarKey).addValueEventListener(postListener2);
+
 //        mWeekView.
 
         // Set long press listener for events.
@@ -252,6 +242,25 @@ public class ViewWeek extends Activity implements WeekView.EmptyViewClickListene
         setupDateTimeInterpreter(true);
 
         mWeekView.setEmptyViewClickListener(this);
+
+        Numero_Actual = Numero_Inicial;
+        Restantes = 0;
+
+        // Get a reference for the week view in the layout.
+
+        // Show a toast message about the touched event.
+//        mWeekView.setOnEventClickListener(this);
+        if (Numero_Inicial > 0) {
+            if (Numero_Actual > 7) {
+                Restantes = 7;
+                Numero_Actual = (Numero_Inicial - 7);
+            } else if (Numero_Actual > 0 && Numero_Actual < 8) {
+                Restantes = Numero_Actual;
+                Numero_Actual = Numero_Actual - Restantes;
+            } else {
+                addhour = findViewById(R.id.Finish);
+            }
+        }
     }
 
     /**
@@ -294,6 +303,17 @@ public class ViewWeek extends Activity implements WeekView.EmptyViewClickListene
     @Override
     public void onEmptyViewClicked(Calendar time) {
         Toast.makeText(ViewWeek.this, "Date clicked: " + time.get(Calendar.HOUR_OF_DAY) + ":" + time.get(Calendar.MINUTE) + " " + time.get(Calendar.DAY_OF_MONTH) + "/" + (time.get(Calendar.MONTH) + 1) + "/" + time.get(Calendar.YEAR), Toast.LENGTH_LONG).show();
+    }
+
+    public int getTimeRemaining(Calendar sDate, Calendar eDate) {
+        // Get the represented date in milliseconds
+        long milis1 = sDate.getTimeInMillis();
+        long milis2 = eDate.getTimeInMillis();
+
+        // Calculate difference in milliseconds
+        long diff = Math.abs(milis2 - milis1);
+
+        return (int) (diff / (24 * 60 * 60 * 1000));
     }
 
 //    @Override

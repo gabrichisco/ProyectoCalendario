@@ -6,22 +6,29 @@
     android:layout_height="match_parent"
     tools:context=".ViewWeek">
 
+    <TextView
+        android:id="@+id/calendarTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="24sp" />
+
     <com.alamkanak.weekview.WeekView
         android:id="@+id/weekView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@id/calendarTitle"
+        app:columnGap="6dp"
+        app:dayBackgroundColor="#05000000"
         app:eventTextColor="@android:color/white"
-        app:textSize="11sp"
-        app:hourHeight="50dp"
+        app:headerColumnBackground="#ffffffff"
         app:headerColumnPadding="6dp"
         app:headerColumnTextColor="#8f000000"
-        app:headerRowPadding="10dp"
-        app:columnGap="6dp"
-        app:noOfVisibleDays="7"
         app:headerRowBackgroundColor="#ffefefef"
-        app:dayBackgroundColor="#05000000"
-        app:todayBackgroundColor="#1848adff"
-        app:headerColumnBackground="#ffffffff"/>
+        app:headerRowPadding="10dp"
+        app:hourHeight="50dp"
+        app:noOfVisibleDays="7"
+        app:textSize="11sp"
+        app:todayBackgroundColor="#1848adff" />
 
     <Button
         android:id="@+id/addHour"

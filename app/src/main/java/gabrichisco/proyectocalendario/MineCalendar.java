@@ -60,9 +60,26 @@ public class MineCalendar extends Activity {
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(MineCalendar.this, android.R.layout.simple_list_item_1, android.R.id.text1, calendarListNames);
                 listView.setAdapter(adapter);
                 listView.setOnItemClickListener((parent, view, position, id) -> {
-                    Intent myIntent = new Intent(MineCalendar.this, ViewCalendar.class);
-                    myIntent.putExtra("key", calendarListKeys.get(position));
-                    MineCalendar.this.startActivity(myIntent);
+                    ValueEventListener postListener3 = new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            Intent myIntent;
+                            if (dataSnapshot.child("CalendarType").getValue().toString().equals("Hours")) {
+                                myIntent = new Intent(MineCalendar.this, ViewWeek.class);
+                            } else {
+                                myIntent = new Intent(MineCalendar.this, ViewCalendar.class);
+                            }
+                            myIntent.putExtra("key", calendarListKeys.get(position));
+                            MineCalendar.this.startActivity(myIntent);
+                            spinner.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                        }
+                    };
+
+                    calendarDataDB.child(calendarListKeys.get(position)).addValueEventListener(postListener3);
                 });
                 spinner.setVisibility(View.GONE);
             }

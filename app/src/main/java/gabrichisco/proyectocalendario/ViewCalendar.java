@@ -27,7 +27,6 @@ import java.util.Calendar;
 import java.util.List;
 
 public class ViewCalendar extends Activity {
-    private FirebaseAuth mAuth;
     FirebaseUser currentUser;
     FirebaseDatabase database;
     DatabaseReference userDataDB, calendarDataDB;
@@ -41,7 +40,7 @@ public class ViewCalendar extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_calendar);
 
-        mAuth = FirebaseAuth.getInstance();
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         database = FirebaseDatabase.getInstance();
         userDataDB = database.getReference("Users");
@@ -83,15 +82,15 @@ public class ViewCalendar extends Activity {
                             if (evDay.getImageDrawable().equals(R.drawable.sample_circle)) {
                                 events.remove(evDay);
                                 events.add(new EventDay(calendar, R.drawable.sample_two_icons));
+                            } else if (evDay.getImageDrawable().equals(R.drawable.sample_two_icons)) {
+                                events.remove(evDay);
+                                events.add(new EventDay(calendar, R.drawable.sample_three_icons));
+                            } else if (evDay.getImageDrawable().equals(R.drawable.sample_three_icons)) {
+                                events.remove(evDay);
+                                events.add(new EventDay(calendar, R.drawable.sample_four_icons));
+                            } else {
+                                events.add(new EventDay(calendar, R.drawable.sample_circle));
                             }
-//                        } else if (events.contains(new EventDay(calendar, R.drawable.sample_two_icons))) {
-//                            events.add(new EventDay(calendar, R.drawable.sample_three_icons));
-//                        } else if (events.contains(new EventDay(calendar, R.drawable.sample_three_icons))) {
-//                            events.add(new EventDay(calendar, R.drawable.sample_four_icons));
-//                        } else if (events.contains(new EventDay(calendar, R.drawable.sample_four_icons))) {
-
-                        } else {
-                            events.add(new EventDay(calendar, R.drawable.sample_circle));
                         }
                     }
                 }
