@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,6 +17,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.kyleduo.switchbutton.SwitchButton;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -27,6 +29,8 @@ public class CreateCalendar extends Activity {
     CalendarView simpleCalendarView;
     Button nextStepBtn;
     TextView instructionsTV;
+    SwitchButton horas;
+
     int count = 0;
     private FirebaseAuth mAuth;
     FirebaseUser currentUser;
@@ -39,6 +43,7 @@ public class CreateCalendar extends Activity {
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
 
+        horas = findViewById(R.id.Horas_Dias);
         nextStepBtn = findViewById(R.id.idNextCalendar);
         simpleCalendarView = findViewById(R.id.simpleCalendarView);
         instructionsTV = findViewById(R.id.instructions);
@@ -95,15 +100,25 @@ public class CreateCalendar extends Activity {
                     calendarDataDB.child(uuid).child("MaxDate").child("Month").setValue(listDates.get(listDates.size() - 1).get(Calendar.MONTH));
                     calendarDataDB.child(uuid).child("MaxDate").child("Day").setValue(listDates.get(listDates.size() - 1).get(Calendar.DAY_OF_MONTH));
 
-                    calendarDataDB.child(uuid).child("CalendarType").setValue("Days");
+                    if (horas.isChecked()) {
+                        calendarDataDB.child(uuid).child("CalendarType").setValue("Hours");
+                        Intent myIntent = new Intent(CreateCalendar.this, ViewWeek.class);
+                        CreateCalendar.this.startActivity(myIntent);
+                        finish();
+                    } else {
+                        calendarDataDB.child(uuid).child("CalendarType").setValue("Days");
+                        Intent myIntent = new Intent(CreateCalendar.this, ViewCalendar.class);
+                        CreateCalendar.this.startActivity(myIntent);
+                        finish();
+
+                    }
+
 
                     calendarDataDB.child(uuid).child("Users").child(currentUser.getUid()).child("UserName").setValue(currentUser.getEmail());
 
                     userDataDB.child(currentUser.getUid()).child("Calendars").child(uuid).setValue(calendarTitle);
 
-                    Intent myIntent = new Intent(CreateCalendar.this, ViewCalendar.class);
-                    CreateCalendar.this.startActivity(myIntent);
-                    finish();
+
                 });
                 builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
 

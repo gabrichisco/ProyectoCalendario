@@ -1,17 +1,11 @@
-package gabrichisco.proyectocalendario;
+/*package gabrichisco.proyectocalendario;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.graphics.RectF;
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.util.TypedValue;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.alamkanak.weekview.DateTimeInterpreter;
-import com.alamkanak.weekview.MonthLoader;
 import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewEvent;
 
@@ -21,21 +15,41 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
-public class CreateWeek extends Activity implements WeekView.EmptyViewClickListener { //implements WeekView.EventClickListener, MonthLoader.MonthChangeListener, WeekView.EventLongPressListener, WeekView.EmptyViewLongPressListener {
+
+public class ViewWeek extends Activity implements WeekView.EmptyViewClickListener { //implements WeekView.EventClickListener, MonthLoader.MonthChangeListener, WeekView.EventLongPressListener, WeekView.EmptyViewLongPressListener {
     private WeekView mWeekView;
+    Button addhour;
+    android.icu.util.Calendar.WeekData
+    int Numero_Inicial;
+    int Maximo = 0;
+    int Restantes = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_create_week);
+        addhour = findViewById(R.id.addHour);
 
+        setContentView(R.layout.activity_view_week);
         // Get a reference for the week view in the layout.
         mWeekView = findViewById(R.id.weekView);
-
         // Show a toast message about the touched event.
 //        mWeekView.setOnEventClickListener(this);
+        /*if (Numero_Inicial > 0) {
+            if (Numero_Actual > 7) {
+                Restantes = 7;
+                Numero_Actual = (Numero_Inicial - 7);
+            } else if (Numero_Actual > 0 && Numero_Actual < 8) {
+                Restantes = Numero_Actual;
+                Numero_Actual = Numero_Actual - Restantes;
+            } else {
+                addhour = findViewById(R.id.Finish);
+            }
 
+        }
+        addhour.setOnClickListener();
+*//*
         mWeekView.setColumnGap(7);
+        //mWeekView.setColumnGap(Restantes);
         mWeekView.setXScrollingSpeed(0);
         mWeekView.setShowDistinctWeekendColor(true);
 
@@ -140,7 +154,7 @@ public class CreateWeek extends Activity implements WeekView.EmptyViewClickListe
             endTime.add(Calendar.HOUR_OF_DAY, 3);
             event = new WeekViewEvent(5, getEventTitle(startTime), startTime, endTime);
             event.setColor(getResources().getColor(R.color.colorAccent));
-            events.add(event);*/
+            events.add(event);*//*
 
             return events;
         });
@@ -163,8 +177,9 @@ public class CreateWeek extends Activity implements WeekView.EmptyViewClickListe
     /**
      * Set up a date time interpreter which will show short date values when in week view and long
      * date values otherwise.
+     *
      * @param shortDate True if the date values should be short.
-     */
+     */ /*
     private void setupDateTimeInterpreter(final boolean shortDate) {
         mWeekView.setDateTimeInterpreter(new DateTimeInterpreter() {
             @Override
@@ -189,7 +204,7 @@ public class CreateWeek extends Activity implements WeekView.EmptyViewClickListe
     }
 
     protected String getEventTitle(Calendar time) {
-        return String.format("Event of %02d:%02d %s/%d", time.get(Calendar.HOUR_OF_DAY), time.get(Calendar.MINUTE), time.get(Calendar.MONTH)+1, time.get(Calendar.DAY_OF_MONTH));
+        return String.format("Event of %02d:%02d %s/%d", time.get(Calendar.HOUR_OF_DAY), time.get(Calendar.MINUTE), time.get(Calendar.MONTH) + 1, time.get(Calendar.DAY_OF_MONTH));
     }
 
     public WeekView getWeekView() {
@@ -198,7 +213,7 @@ public class CreateWeek extends Activity implements WeekView.EmptyViewClickListe
 
     @Override
     public void onEmptyViewClicked(Calendar time) {
-        Toast.makeText(CreateWeek.this, "Date clicked: " + time.get(Calendar.HOUR_OF_DAY) + ":" + time.get(Calendar.MINUTE) + " " + time.get(Calendar.DAY_OF_MONTH) + "/" + (time.get(Calendar.MONTH) + 1) + "/" + time.get(Calendar.YEAR), Toast.LENGTH_LONG).show();
+        Toast.makeText(ViewWeek.this, "Date clicked: " + time.get(Calendar.HOUR_OF_DAY) + ":" + time.get(Calendar.MINUTE) + " " + time.get(Calendar.DAY_OF_MONTH) + "/" + (time.get(Calendar.MONTH) + 1) + "/" + time.get(Calendar.YEAR), Toast.LENGTH_LONG).show();
     }
 
 //    @Override
@@ -206,3 +221,6 @@ public class CreateWeek extends Activity implements WeekView.EmptyViewClickListe
 //        return null;
 //    }
 }
+
+}
+ */
