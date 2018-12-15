@@ -3,6 +3,7 @@ package gabrichisco.proyectocalendario;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
@@ -33,8 +34,6 @@ public class ViewWeek extends Activity implements WeekView.EmptyViewClickListene
     FirebaseDatabase database;
     DatabaseReference userDataDB, CalendarDataDB;
     int Numero_Inicial;
-    int Numero_Actual;
-    int Restantes;
     Button addhour;
     String calendarKey;
     TextView calendarTitle;
@@ -55,14 +54,6 @@ public class ViewWeek extends Activity implements WeekView.EmptyViewClickListene
             Bundle getData = getIntent().getExtras();
             calendarKey = getData.getString("key");
         }
-
-        // The week view has infinite scrolling horizontally. We have to provide the events of a
-        // month every time the month changes on the week view.
-
-        //        addhour.setOnClickListener();
-        mWeekView.setColumnGap(7);
-        mWeekView.setXScrollingSpeed(0);
-        mWeekView.setShowDistinctWeekendColor(true);
 
         mWeekView.setMonthChangeListener((newYear, newMonth) -> {
 
@@ -180,10 +171,11 @@ public class ViewWeek extends Activity implements WeekView.EmptyViewClickListene
                 minDate.set(Integer.parseInt(dataSnapshot.child("MinDate").child("Year").getValue().toString()), Integer.parseInt(dataSnapshot.child("MinDate").child("Month").getValue().toString()), Integer.parseInt(dataSnapshot.child("MinDate").child("Day").getValue().toString()));
                 Calendar maxDate = Calendar.getInstance();
                 maxDate.set(Integer.parseInt(dataSnapshot.child("MaxDate").child("Year").getValue().toString()), Integer.parseInt(dataSnapshot.child("MaxDate").child("Month").getValue().toString()), Integer.parseInt(dataSnapshot.child("MaxDate").child("Day").getValue().toString()));
+                Calendar maxDateForWeek = Calendar.getInstance();
+                maxDateForWeek.set(Integer.parseInt(dataSnapshot.child("MaxDate").child("Year").getValue().toString()), Integer.parseInt(dataSnapshot.child("MaxDate").child("Month").getValue().toString()), Integer.parseInt(dataSnapshot.child("MaxDate").child("Day").getValue().toString())-5);
+
 
                 Numero_Inicial = ViewWeek.this.getTimeRemaining(minDate, maxDate);
-
-                mWeekView.setColumnGap(Restantes);
 
 //                    minDate.set
 
@@ -217,9 +209,43 @@ public class ViewWeek extends Activity implements WeekView.EmptyViewClickListene
                     }*/
 
                 runOnUiThread(() -> {
-//                        simpleCalendarView.setDisabledDays(disbledDates);
-//
-//                        simpleCalendarView.setEvents(events);
+                    mWeekView.goToDate(minDate);
+
+                    if (Numero_Inicial < 6) {
+                        mWeekView.setNumberOfVisibleDays(Numero_Inicial+1);
+                        mWeekView.setXScrollingSpeed(0);
+                    } else {
+                        mWeekView.setNumberOfVisibleDays(6);
+                        mWeekView.setXScrollingSpeed(1);
+
+                        mWeekView.setScrollListener((newFirstVisibleDay, oldFirstVisibleDay) -> {
+                            System.out.println("NEW: " + newFirstVisibleDay);
+                            System.out.println("OLD: " + oldFirstVisibleDay);
+                            if(calendarIsLessThan(newFirstVisibleDay, minDate)){
+                                System.out.println("SAME");
+                                mWeekView.goToDate(minDate);
+                                mWeekView.setXScrollingSpeed(0);
+
+                                final Handler handler = new Handler();
+                                handler.postDelayed(() -> {
+                                    mWeekView.setXScrollingSpeed(1);
+                                    mWeekView.goToDate(minDate);
+                                }, 10);
+                            }
+
+                            if(calendarIsMoreThan(newFirstVisibleDay, maxDateForWeek)){
+                                System.out.println("SAME2");
+                                mWeekView.goToDate(maxDateForWeek);
+                                mWeekView.setXScrollingSpeed(0);
+
+                                final Handler handler = new Handler();
+                                handler.postDelayed(() -> {
+                                    mWeekView.setXScrollingSpeed(1);
+                                    mWeekView.goToDate(maxDateForWeek);
+                                }, 10);
+                            }
+                        });
+                    }
                 });
             }
 
@@ -229,46 +255,11 @@ public class ViewWeek extends Activity implements WeekView.EmptyViewClickListene
         };
         CalendarDataDB.child(calendarKey).addValueEventListener(postListener2);
 
-//        mWeekView.
-
-        // Set long press listener for events.
-//        mWeekView.setEventLongPressListener(this);
-
-        // Set long press listener for empty view
-//        mWeekView.setEmptyViewLongPressListener(this);
-
-        // Set up a date time interpreter to interpret how the date and time will be formatted in
-        // the week view. This is optional.
         setupDateTimeInterpreter(true);
 
         mWeekView.setEmptyViewClickListener(this);
-
-        Numero_Actual = Numero_Inicial;
-        Restantes = 0;
-
-        // Get a reference for the week view in the layout.
-
-        // Show a toast message about the touched event.
-//        mWeekView.setOnEventClickListener(this);
-        if (Numero_Inicial > 0) {
-            if (Numero_Actual > 7) {
-                Restantes = 7;
-                Numero_Actual = (Numero_Inicial - 7);
-            } else if (Numero_Actual > 0 && Numero_Actual < 8) {
-                Restantes = Numero_Actual;
-                Numero_Actual = Numero_Actual - Restantes;
-            } else {
-                addhour = findViewById(R.id.Finish);
-            }
-        }
     }
 
-    /**
-     * Set up a date time interpreter which will show short date values when in week view and long
-     * date values otherwise.
-     *
-     * @param shortDate True if the date values should be short.
-     */
     private void setupDateTimeInterpreter(final boolean shortDate) {
         mWeekView.setDateTimeInterpreter(new DateTimeInterpreter() {
             @Override
@@ -316,8 +307,31 @@ public class ViewWeek extends Activity implements WeekView.EmptyViewClickListene
         return (int) (diff / (24 * 60 * 60 * 1000));
     }
 
-//    @Override
-//    public List<? extends WeekViewEvent> onMonthChange(int newYear, int newMonth) {
-//        return null;
-//    }
+    private boolean compareCalendars(Calendar calendarA, Calendar calendarB) {
+        if (calendarA.get(Calendar.YEAR) == calendarB.get(Calendar.YEAR)) {
+            if (calendarA.get(Calendar.MONTH) == calendarB.get(Calendar.MONTH)) {
+                if (calendarA.get(Calendar.DAY_OF_MONTH) == calendarB.get(Calendar.DAY_OF_MONTH)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private boolean calendarIsLessThan(Calendar calendarA, Calendar calendarB) {
+        if (calendarA.getTimeInMillis() <= calendarB.getTimeInMillis()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean calendarIsMoreThan(Calendar calendarA, Calendar calendarB) {
+        if (calendarA.getTimeInMillis() >= calendarB.getTimeInMillis()) {
+            return true;
+        }
+
+        return false;
+    }
 }

@@ -26,7 +26,6 @@
         app:headerRowBackgroundColor="#ffefefef"
         app:headerRowPadding="10dp"
         app:hourHeight="50dp"
-        app:noOfVisibleDays="7"
         app:textSize="11sp"
         app:todayBackgroundColor="#1848adff" />
 
