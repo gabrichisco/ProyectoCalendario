@@ -98,7 +98,7 @@ public class ViewCalendar extends Activity {
                 simpleCalendarView.setMaximumDate(maxDate);
                 simpleCalendarView.setMinimumDate(minDate);
 
-                if(!dataSnapshot.child("UserOwner").getValue().toString().equals(currentUser.getUid())){
+                if (!dataSnapshot.child("UserOwner").getValue().toString().equals(currentUser.getUid())) {
                     qrGenerator.setVisibility(View.GONE);
                 }
 
@@ -122,9 +122,9 @@ public class ViewCalendar extends Activity {
                             } else if (evDay.getImageDrawable().equals(R.drawable.sample_three_icons)) {
                                 events.remove(evDay);
                                 events.add(new EventDay(calendar, R.drawable.sample_four_icons));
-                            } else {
-                                events.add(new EventDay(calendar, R.drawable.sample_circle));
                             }
+                        } else {
+                            events.add(new EventDay(calendar, R.drawable.sample_circle));
                         }
                     }
                 }
