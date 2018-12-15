@@ -39,5 +39,10 @@ dependencies {
     implementation 'com.applandeo:material-calendar-view:1.5.0'
     implementation 'com.github.alamkanak:android-week-view:1.2.6'
     implementation 'com.kyleduo.switchbutton:library:2.0.0'
+    //implementation 'com.google.android.gms:play-services-vision:11.2.2'
+    implementation project(path: ':barcode-reader')
+    implementation 'androidmads.library.qrgenearator:QRGenearator:1.0.3'
 }
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'

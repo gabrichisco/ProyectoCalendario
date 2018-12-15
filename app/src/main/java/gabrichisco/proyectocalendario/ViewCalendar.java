@@ -2,12 +2,26 @@ package gabrichisco.proyectocalendario;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.Point;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
+import android.view.Display;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,10 +35,17 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
+import androidmads.library.qrgenearator.QRGContents;
+import androidmads.library.qrgenearator.QRGEncoder;
 
 public class ViewCalendar extends Activity {
     FirebaseUser currentUser;
@@ -34,6 +55,11 @@ public class ViewCalendar extends Activity {
     String calendarKey;
     CalendarView simpleCalendarView;
     Button okBtn;
+    ImageView qrGenerator;
+
+    String calendarKeyQR, calendarNameQR;
+    String inputValue;
+    Bitmap bitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +73,7 @@ public class ViewCalendar extends Activity {
         calendarDataDB = database.getReference("Calendars");
         simpleCalendarView = findViewById(R.id.simpleCalendarView);
         okBtn = findViewById(R.id.OkBtn);
+        qrGenerator = findViewById(R.id.QRGeneratorBtn);
 
         if (getIntent().hasExtra("key")) {
             Bundle getData = getIntent().getExtras();
@@ -60,6 +87,9 @@ public class ViewCalendar extends Activity {
                 Log.d("MineCalendar", dataSnapshot.toString());
                 ((TextView) findViewById(R.id.calendarTitle)).setText(dataSnapshot.child("CalendarName").getValue().toString());
 
+                calendarKeyQR = dataSnapshot.getKey();
+                calendarNameQR = dataSnapshot.child("CalendarName").getValue().toString();
+
                 Calendar minDate = Calendar.getInstance();
                 minDate.set(Integer.parseInt(dataSnapshot.child("MinDate").child("Year").getValue().toString()), Integer.parseInt(dataSnapshot.child("MinDate").child("Month").getValue().toString()), Integer.parseInt(dataSnapshot.child("MinDate").child("Day").getValue().toString()));
                 Calendar maxDate = Calendar.getInstance();
@@ -67,6 +97,10 @@ public class ViewCalendar extends Activity {
 
                 simpleCalendarView.setMaximumDate(maxDate);
                 simpleCalendarView.setMinimumDate(minDate);
+
+                if(!dataSnapshot.child("UserOwner").getValue().toString().equals(currentUser.getUid())){
+                    qrGenerator.setVisibility(View.GONE);
+                }
 
                 List<Calendar> disbledDates = new ArrayList<>();
 
@@ -117,6 +151,35 @@ public class ViewCalendar extends Activity {
                 calendarDataDB.child(calendarKey).child("Users").child(currentUser.getUid()).child("SelectedDates").child(Integer.toString(j)).child("Month").setValue(calendar.get(Calendar.MONTH));
                 calendarDataDB.child(calendarKey).child("Users").child(currentUser.getUid()).child("SelectedDates").child(Integer.toString(j)).child("Day").setValue(calendar.get(Calendar.DAY_OF_MONTH));
                 j++;
+            }
+        });
+
+        qrGenerator.setOnClickListener(view -> {
+            inputValue = calendarKeyQR + "\\|" + calendarNameQR;
+
+            QRCodeWriter writer = new QRCodeWriter();
+            try {
+                BitMatrix bitMatrix = writer.encode(inputValue, BarcodeFormat.QR_CODE, 512, 512);
+                int width = bitMatrix.getWidth();
+                int height = bitMatrix.getHeight();
+                Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+                for (int x = 0; x < width; x++) {
+                    for (int y = 0; y < height; y++) {
+                        bmp.setPixel(x, y, bitMatrix.get(x, y) ? Color.BLACK : Color.WHITE);
+                    }
+                }
+
+                AlertDialog.Builder ImageDialog = new AlertDialog.Builder(ViewCalendar.this);
+                ImageDialog.setTitle("Calendario para compartir");
+                ImageView showImage = new ImageView(ViewCalendar.this);
+                showImage.setImageBitmap(bmp);
+                ImageDialog.setView(showImage);
+
+                ImageDialog.setNegativeButton("Ok", (arg0, arg1) -> {
+                });
+                ImageDialog.show();
+            } catch (WriterException e) {
+                e.printStackTrace();
             }
         });
     }

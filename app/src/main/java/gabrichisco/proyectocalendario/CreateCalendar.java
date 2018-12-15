@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,7 +31,6 @@ public class CreateCalendar extends Activity {
     Button nextStepBtn;
     TextView instructionsTV;
     SwitchButton horas;
-
     int count = 0;
     private FirebaseAuth mAuth;
     FirebaseUser currentUser;
@@ -60,7 +60,6 @@ public class CreateCalendar extends Activity {
 
         simpleCalendarView.setOnDayClickListener(eventDay -> {
             Calendar clickedDayCalendar = eventDay.getCalendar();
-
         });
 
         nextStepBtn.setOnClickListener(v -> {
@@ -103,22 +102,20 @@ public class CreateCalendar extends Activity {
                     if (horas.isChecked()) {
                         calendarDataDB.child(uuid).child("CalendarType").setValue("Hours");
                         Intent myIntent = new Intent(CreateCalendar.this, ViewWeek.class);
+                        myIntent.putExtra("key", uuid);
                         CreateCalendar.this.startActivity(myIntent);
                         finish();
                     } else {
                         calendarDataDB.child(uuid).child("CalendarType").setValue("Days");
                         Intent myIntent = new Intent(CreateCalendar.this, ViewCalendar.class);
+                        myIntent.putExtra("key", uuid);
                         CreateCalendar.this.startActivity(myIntent);
                         finish();
-
                     }
-
 
                     calendarDataDB.child(uuid).child("Users").child(currentUser.getUid()).child("UserName").setValue(currentUser.getEmail());
 
                     userDataDB.child(currentUser.getUid()).child("Calendars").child(uuid).setValue(calendarTitle);
-
-
                 });
                 builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
 
