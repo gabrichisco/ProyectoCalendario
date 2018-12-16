@@ -60,6 +60,8 @@ public class ViewCalendar extends Activity {
     String calendarKeyQR, calendarNameQR;
     String inputValue;
     Bitmap bitmap;
+    List<Calendar> userEvents = new ArrayList<>();
+    ValueEventListener postListener2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +82,7 @@ public class ViewCalendar extends Activity {
             calendarKey = getData.getString("key");
         }
 
-        ValueEventListener postListener2 = new ValueEventListener() {
+        postListener2 = new ValueEventListener() {
             @SuppressLint("RestrictedApi")
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -107,51 +109,69 @@ public class ViewCalendar extends Activity {
                 List<EventDay> events = new ArrayList<>();
                 for (DataSnapshot propertySnapshot : dataSnapshot.child("Users").getChildren()) {
                     for (DataSnapshot snapshotDates : propertySnapshot.child("SelectedDates").getChildren()) {
-                        Calendar calendar = Calendar.getInstance();
+                        if (snapshotDates.getChildrenCount() == 3) {
+                            Calendar calendar = Calendar.getInstance();
 
-                        calendar.set(Integer.parseInt(snapshotDates.child("Year").getValue().toString()), Integer.parseInt(snapshotDates.child("Month").getValue().toString()), Integer.parseInt(snapshotDates.child("Day").getValue().toString()));
-                        EventDay evDay = eventExists(events, calendar);
+                            calendar.set(Integer.parseInt(snapshotDates.child("Year").getValue().toString()), Integer.parseInt(snapshotDates.child("Month").getValue().toString()), Integer.parseInt(snapshotDates.child("Day").getValue().toString()));
+                            EventDay evDay = eventExists(events, calendar);
 
-                        if (evDay != null) {
-                            if (evDay.getImageDrawable().equals(R.drawable.sample_circle)) {
-                                events.remove(evDay);
-                                events.add(new EventDay(calendar, R.drawable.sample_two_icons));
-                            } else if (evDay.getImageDrawable().equals(R.drawable.sample_two_icons)) {
-                                events.remove(evDay);
-                                events.add(new EventDay(calendar, R.drawable.sample_three_icons));
-                            } else if (evDay.getImageDrawable().equals(R.drawable.sample_three_icons)) {
-                                events.remove(evDay);
-                                events.add(new EventDay(calendar, R.drawable.sample_four_icons));
+                            if (evDay != null) {
+                                if (evDay.getImageDrawable().equals(R.drawable.sample_circle)) {
+                                    events.remove(evDay);
+                                    events.add(new EventDay(calendar, R.drawable.sample_two_icons));
+                                } else if (evDay.getImageDrawable().equals(R.drawable.sample_two_icons)) {
+                                    events.remove(evDay);
+                                    events.add(new EventDay(calendar, R.drawable.sample_three_icons));
+                                } else if (evDay.getImageDrawable().equals(R.drawable.sample_three_icons)) {
+                                    events.remove(evDay);
+                                    events.add(new EventDay(calendar, R.drawable.sample_four_icons));
+                                }
+                            } else {
+                                events.add(new EventDay(calendar, R.drawable.sample_circle));
                             }
-                        } else {
-                            events.add(new EventDay(calendar, R.drawable.sample_circle));
+
+                            if (propertySnapshot.getKey().equals(currentUser.getUid())) {
+                                userEvents.add(calendar);
+                            }
                         }
                     }
                 }
 
-                runOnUiThread(() -> {
-                    simpleCalendarView.setDisabledDays(disbledDates);
+                simpleCalendarView.setDisabledDays(disbledDates);
 
-                    simpleCalendarView.setEvents(events);
-                });
-            }
+                simpleCalendarView.setEvents(events);
+                }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
             }
         };
-        calendarDataDB.child(calendarKey).addValueEventListener(postListener2);
+        calendarDataDB.child(calendarKey).addListenerForSingleValueEvent(postListener2);
 
         okBtn.setOnClickListener(view -> {
-            int j = 0;
             for (Calendar calendar : simpleCalendarView.getSelectedDates()) {
-                System.out.println(calendar.getTime().toString());
-
-                calendarDataDB.child(calendarKey).child("Users").child(currentUser.getUid()).child("SelectedDates").child(Integer.toString(j)).child("Year").setValue(calendar.get(Calendar.YEAR));
-                calendarDataDB.child(calendarKey).child("Users").child(currentUser.getUid()).child("SelectedDates").child(Integer.toString(j)).child("Month").setValue(calendar.get(Calendar.MONTH));
-                calendarDataDB.child(calendarKey).child("Users").child(currentUser.getUid()).child("SelectedDates").child(Integer.toString(j)).child("Day").setValue(calendar.get(Calendar.DAY_OF_MONTH));
-                j++;
+                int exists = calendarExists(userEvents, calendar);
+                if (exists != -1) {
+                    userEvents.remove(exists);
+                } else {
+                    userEvents.add(calendar);
+                }
             }
+
+            calendarDataDB.child(calendarKey).child("Users").child(currentUser.getUid()).child("SelectedDates").removeValue();
+
+                int j = 0;
+                for (Calendar calendar : userEvents) {
+                    System.out.println(calendar.getTime().toString());
+
+                    calendarDataDB.child(calendarKey).child("Users").child(currentUser.getUid()).child("SelectedDates").child(Integer.toString(j)).child("Year").setValue(calendar.get(Calendar.YEAR));
+                    calendarDataDB.child(calendarKey).child("Users").child(currentUser.getUid()).child("SelectedDates").child(Integer.toString(j)).child("Month").setValue(calendar.get(Calendar.MONTH));
+                    calendarDataDB.child(calendarKey).child("Users").child(currentUser.getUid()).child("SelectedDates").child(Integer.toString(j)).child("Day").setValue(calendar.get(Calendar.DAY_OF_MONTH));
+                    j++;
+                }
+
+            finish();
+            startActivity(getIntent());
         });
 
         qrGenerator.setOnClickListener(view -> {
@@ -196,5 +216,27 @@ public class ViewCalendar extends Activity {
         }
 
         return null;
+    }
+
+    private int calendarExists(List<Calendar> dates, Calendar calendar) {
+        int i = -1;
+        for (Calendar date : dates) {
+            if (date.get(Calendar.YEAR) == calendar.get(Calendar.YEAR)) {
+                if (date.get(Calendar.MONTH) == calendar.get(Calendar.MONTH)) {
+                    if (date.get(Calendar.DAY_OF_MONTH) == calendar.get(Calendar.DAY_OF_MONTH)) {
+                        return ++i;
+                    }
+                }
+            }
+            ++i;
+        }
+
+        return -1;
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 }
