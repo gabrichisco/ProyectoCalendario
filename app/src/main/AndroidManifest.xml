@@ -36,7 +36,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" />
+        <activity android:name=".MainActivity">
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+
+                <data
+                    android:host="www.proyectocalendario.com"
+                    android:scheme="http"/>
+            </intent-filter>
+
+        </activity>
         <activity android:name=".CreateCalendar" />
         <activity android:name=".ViewWeek" android:launchMode="singleInstance" />
         <activity android:name=".MineCalendar" />

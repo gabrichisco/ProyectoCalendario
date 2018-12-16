@@ -55,7 +55,7 @@ public class ViewCalendar extends Activity {
     String calendarKey;
     CalendarView simpleCalendarView;
     Button okBtn;
-    ImageView qrGenerator;
+    ImageView qrGenerator, share;
 
     String calendarKeyQR, calendarNameQR;
     String inputValue;
@@ -76,6 +76,7 @@ public class ViewCalendar extends Activity {
         simpleCalendarView = findViewById(R.id.simpleCalendarView);
         okBtn = findViewById(R.id.OkBtn);
         qrGenerator = findViewById(R.id.QRGeneratorBtn);
+        share = findViewById(R.id.shareBtn);
 
         if (getIntent().hasExtra("key")) {
             Bundle getData = getIntent().getExtras();
@@ -201,6 +202,15 @@ public class ViewCalendar extends Activity {
             } catch (WriterException e) {
                 e.printStackTrace();
             }
+        });
+
+        share.setOnClickListener(view -> {
+            Intent i = new Intent(Intent.ACTION_SEND);
+            i.setType("text/plain");
+            i.putExtra(Intent.EXTRA_SUBJECT, "Proyecto Calendario");
+            i.putExtra(Intent.EXTRA_TEXT, "Aquí tienes el calendario: www.proyectocalendario.com/" + calendarKeyQR + "_" + calendarNameQR);
+            startActivity(Intent.createChooser(i, "Elige"));
+
         });
     }
 

@@ -39,6 +39,42 @@ public class MainActivity extends Activity {
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
 
+        Intent intent = getIntent();
+        String action = intent.getAction();
+
+        if (Intent.ACTION_VIEW.equals(action)) {
+            System.out.println("DATA: " + intent.getDataString());
+            System.out.println("DATA: " + intent.getData());
+
+            String UUID = intent.getDataString().split("_")[0];
+            String NAME = intent.getDataString().split("_")[1];
+
+            AlertDialog.Builder builder;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                builder = new AlertDialog.Builder(MainActivity.this, android.R.style.Theme_Material_Dialog_Alert);
+            } else {
+                builder = new AlertDialog.Builder(MainActivity.this);
+            }
+
+            builder.setTitle("Añadir calendario")
+                    .setMessage("¿Quieres añadir el calendario \'" + NAME + "\' a tu lista de calendarios?")
+                    .setPositiveButton("Sí", (dialog, which) -> {
+
+                        FirebaseDatabase database = FirebaseDatabase.getInstance();
+                        DatabaseReference calendarDataDB = database.getReference("Calendars");
+                        DatabaseReference userDataDB = database.getReference("Users");
+
+                        userDataDB.child(currentUser.getUid()).child("Calendars").child(UUID).setValue(NAME);
+                        calendarDataDB.child(UUID).child("Users").child(currentUser.getUid()).child("UserName").setValue(currentUser.getEmail());
+
+                    })
+                    .setNegativeButton("No", (dialog, which) -> {
+                        dialog.dismiss();
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+        }
+
         createBtn.setOnClickListener(v -> {
             Intent myIntent = new Intent(MainActivity.this, CreateCalendar.class);
             MainActivity.this.startActivity(myIntent);

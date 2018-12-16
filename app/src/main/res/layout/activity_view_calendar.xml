@@ -37,4 +37,13 @@
         android:layout_toRightOf="@id/OkBtn"
         android:src="@drawable/qr" />
 
+    <ImageView
+        android:id="@+id/shareBtn"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="15dp"
+        android:layout_below="@id/simpleCalendarView"
+        android:layout_toRightOf="@id/QRGeneratorBtn"
+        android:src="@drawable/share" />
+
 </RelativeLayout>
